@@ -75,7 +75,7 @@ public class RegisterActivity extends AppCompatActivity {
                             if(task.isSuccessful()){
                                 //get the user id
                                 String userId = mAuth.getCurrentUser().getUid();
-                                //store the data into the database
+                                //store the data into the databasel
                                 mDatabase = FirebaseDatabase.getInstance().getReference().child("Users").child(userId);
 
                                 mDatabase.child("user_name").setValue(name);

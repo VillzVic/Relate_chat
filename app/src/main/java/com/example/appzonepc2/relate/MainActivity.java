@@ -84,6 +84,10 @@ public class MainActivity extends AppCompatActivity {
             //TODO: display a progress bar
             mAuth.signOut();
             logOutUser();
+        }
+        else if(menuitem == R.id.all_users){
+            Intent intent = new Intent(MainActivity.this, AllUsersActivity.class);
+            startActivity(intent);
         }else if(menuitem == R.id.main_account_settings_button){
             Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
             startActivity(intent);
