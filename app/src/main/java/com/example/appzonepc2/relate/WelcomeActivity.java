@@ -20,6 +20,7 @@ public class WelcomeActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }finally {
                     Intent intent  = new Intent(WelcomeActivity.this,MainActivity.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK| Intent.FLAG_ACTIVITY_CLEAR_TASK);
                     startActivity(intent);
                 }
             }

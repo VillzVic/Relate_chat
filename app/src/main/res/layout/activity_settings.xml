@@ -42,7 +42,7 @@
 
     <Button
         android:id="@+id/changeImage"
-        android:layout_above="@id/changeStatus"
+      android:layout_above="@+id/changeStatus"
         android:layout_alignLeft="@+id/changeStatus"
         android:text="Change Image"
         android:textSize="20sp"

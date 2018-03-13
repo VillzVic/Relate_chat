@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.example.appzonepc2.relate.ProfileActivity">
+<!--todo use a collapsing toolbar-->
+
+    <ImageView
+        android:id="@+id/userImage"
+        android:layout_width="match_parent"
+        android:layout_height="280dp"
+        android:src="@drawable/profileview"/>
+
+    <TextView
+        android:id="@+id/profile_username"
+        android:layout_below="@+id/userImage"
+        android:layout_centerHorizontal="true"
+        android:text="Username"
+        android:layout_marginTop="20dp"
+        android:textSize="23sp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+    <TextView
+        android:id="@+id/profile_userstatus"
+        android:layout_below="@+id/profile_username"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="10dp"
+        android:textSize="18dp"
+        android:text="user status"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+    
+    <Button
+        android:id="@+id/friend_request"
+        android:layout_width="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="SEND FRIEND REQUEST "
+        android:layout_above="@+id/decline_friend_request"
+        android:layout_centerHorizontal="true"
+        android:layout_height="wrap_content"/>
+
+    <Button
+        android:layout_marginBottom="15dp"
+        android:text="DECLINE FRIEND REQUEST"
+        android:id="@+id/decline_friend_request"
+        android:layout_width="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginTop="10dp"
+        android:layout_centerHorizontal="true"
+        android:layout_height="wrap_content"/>
+</RelativeLayout>

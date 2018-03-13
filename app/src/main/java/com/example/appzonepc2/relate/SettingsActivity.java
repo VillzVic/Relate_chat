@@ -12,8 +12,6 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.RequestOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -25,6 +23,9 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.squareup.picasso.Callback;
+import com.squareup.picasso.NetworkPolicy;
+import com.squareup.picasso.Picasso;
 import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
 
@@ -66,7 +67,9 @@ public class SettingsActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         String uid = mAuth.getCurrentUser().getUid();
         databaseReference = FirebaseDatabase.getInstance().getReference().child("Users").child(uid);
+        databaseReference.keepSynced(true);
         storageReference = FirebaseStorage.getInstance().getReference().child("profile_image");
+
         thumbStorageReference = FirebaseStorage.getInstance().getReference().child("thumb_profile_image");
 
         databaseReference.addValueEventListener(new ValueEventListener() {
@@ -79,15 +82,27 @@ public class SettingsActivity extends AppCompatActivity {
                 String user_image = dataSnapshot.child("user_image").getValue().toString();
                 String user_name = dataSnapshot.child("user_name").getValue().toString();
                 String user_status = dataSnapshot.child("user_status").getValue().toString();
-                String user_thumb_image = dataSnapshot.child("user_thumb_image").getValue().toString();
+                final String user_thumb_image = dataSnapshot.child("user_thumb_image").getValue().toString();
 
                 username.setText(user_name);
                 status.setText(user_status);
                 if(user_image.equals("default_profile")){
                     //set the account profile to be the dummy one
                 }else{
-                    RequestOptions requestOptions = new RequestOptions().placeholder(R.drawable.profileview);
-                    Glide.with(SettingsActivity.this).load(user_thumb_image).apply(requestOptions).into(circleImageView);
+//                    RequestOptions requestOptions = new RequestOptions().placeholder(R.drawable.profileview);
+//                    Glide.with(SettingsActivity.this).load(user_thumb_image).apply(requestOptions).into(circleImageView);
+                    Picasso.with(SettingsActivity.this).load(user_thumb_image).networkPolicy(NetworkPolicy.OFFLINE).placeholder(R.drawable.profileview)
+                            .into(circleImageView, new Callback() {
+                                @Override
+                                public void onSuccess() {
+
+                                }
+
+                                @Override
+                                public void onError() {
+                                    Picasso.with(getApplicationContext()).load(user_thumb_image).placeholder(R.drawable.profileview).into(circleImageView);
+                                }
+                            });
                 }
 
 
@@ -126,7 +141,8 @@ public class SettingsActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if(requestCode == REQUEST_CODE && resultCode == RESULT_OK && data!=null){
-            Uri imageUri = data.getData();
+//            Uri imageUri = data.getData();
+
             CropImage.activity()
                     .setGuidelines(CropImageView.Guidelines.ON)
                     .setAspectRatio(1,1)
@@ -168,11 +184,11 @@ public class SettingsActivity extends AppCompatActivity {
                 StorageReference filePath = storageReference.child(uid +".jpg"); //get the path
                 filePath.putFile(resultUri).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() { //put image in the path
                     @Override
-                    public void onComplete(@NonNull final Task<UploadTask.TaskSnapshot> task) {
+                    public void onComplete(@NonNull final Task<UploadTask.TaskSnapshot> task) { //put the  file in the db
                         if(task.isSuccessful()){
                             Toast.makeText(SettingsActivity.this,"Updating your profile image...",Toast.LENGTH_LONG).show();
 
-                            final String imageDownloadUrl = task.getResult().getDownloadUrl().toString(); //url for normal image
+                            final String imageDownloadUrl = task.getResult().getDownloadUrl().toString(); //url for normal image to store in the db
 
                             //upload the compressed image
                             UploadTask uploadTask = thumb_filePath.putBytes(thumb_byte); //put the image into the filepath in firebase

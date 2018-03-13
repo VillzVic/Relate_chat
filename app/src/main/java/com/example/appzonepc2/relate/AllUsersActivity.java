@@ -1,6 +1,7 @@
 package com.example.appzonepc2.relate;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -9,13 +10,15 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
 import com.example.appzonepc2.relate.model.userListDetails;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.squareup.picasso.Callback;
+import com.squareup.picasso.NetworkPolicy;
+import com.squareup.picasso.Picasso;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -44,6 +47,7 @@ public class AllUsersActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         String uid = mAuth.getCurrentUser().getUid();
         mReference = FirebaseDatabase.getInstance().getReference().child("Users");
+        mReference.keepSynced(true);
 
 
 
@@ -62,12 +66,21 @@ public class AllUsersActivity extends AppCompatActivity {
 
 
             @Override
-            protected void populateViewHolder(AllUserViewHolder viewHolder, userListDetails model, int position) {
+            protected void populateViewHolder(AllUserViewHolder viewHolder, userListDetails model, final int position) {
                 viewHolder.setUsername(model.getUser_name());
                 viewHolder.setUserStatus(model.getUser_status());
-                viewHolder.setUserImage(model.getUser_image(),getApplicationContext());
-            }
+                viewHolder.setUser_thumb_image(model.getUser_thumb_image(),getApplicationContext());
 
+            viewHolder.mView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    String visit_user_id = getRef(position).getKey(); //  get the user id of any user  clicked
+                    Intent intent = new Intent(AllUsersActivity.this,ProfileActivity.class);
+                    intent.putExtra("visit_user_data",visit_user_id);
+                    startActivity(intent);
+                }
+            });
+            }
 
 
         };
@@ -101,9 +114,22 @@ public class AllUsersActivity extends AppCompatActivity {
             TextView textView = mView.findViewById(R.id.all_users_status);
             textView.setText(user_status);
         }
-        public void setUserImage(String user_image, Context ctx){
-            CircleImageView imageView = mView.findViewById(R.id.all_users_profile_image);
-            Glide.with(ctx).load(user_image).into(imageView);
+        public void setUser_thumb_image(final String user_thumb_image, final Context ctx){
+            final CircleImageView imageView = mView.findViewById(R.id.all_users_profile_image);
+//            RequestOptions requestOptions = new RequestOptions().placeholder(R.drawable.profileview) ;
+//            Glide.with(ctx).load(user_thumb_image).apply(requestOptions).into(imageView);
+            Picasso.with(ctx).load(user_thumb_image).networkPolicy(NetworkPolicy.OFFLINE).placeholder(R.drawable.profileview)
+                    .into(imageView, new Callback() {
+                        @Override
+                        public void onSuccess() {
+
+                        }
+
+                        @Override
+                        public void onError() {
+                            Picasso.with(ctx).load(user_thumb_image).placeholder(R.drawable.profileview).into(imageView);
+                        }
+                    });
         }
 
     }

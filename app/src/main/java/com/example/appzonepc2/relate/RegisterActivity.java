@@ -17,6 +17,7 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.iid.FirebaseInstanceId;
 
 public class RegisterActivity extends AppCompatActivity {
     private EditText username, email, Password;
@@ -75,12 +76,14 @@ public class RegisterActivity extends AppCompatActivity {
                             if(task.isSuccessful()){
                                 //get the user id
                                 String userId = mAuth.getCurrentUser().getUid();
+                                String device_token = FirebaseInstanceId.getInstance().getToken();
                                 //store the data into the databasel
                                 mDatabase = FirebaseDatabase.getInstance().getReference().child("Users").child(userId);
 
                                 mDatabase.child("user_name").setValue(name);
                                 mDatabase.child("user_status").setValue("Hey There, am using relate");
                                 mDatabase.child("user_image").setValue("default_profile");
+                                mDatabase.child("device_token").setValue(device_token);
                                 mDatabase.child("user_thumb_image").setValue("default_image");
                                 mDatabase.child("phone_number").setValue("");
                                 mDatabase.child("Address").setValue("");
@@ -90,7 +93,7 @@ public class RegisterActivity extends AppCompatActivity {
                                             public void onComplete(@NonNull Task<Void> task) {
                                                 if(task.isSuccessful()){
 
-                                                    Toast.makeText(getApplicationContext(), "Sign In Successful, please login ",Toast.LENGTH_LONG).show();
+                                                    Toast.makeText(getApplicationContext(), "Sign Up Successful, please login ",Toast.LENGTH_LONG).show();
                                                     Intent mainIntent = new Intent(RegisterActivity.this, LoginActivity.class);
                                                     startActivity(mainIntent);
                                                     finish();
