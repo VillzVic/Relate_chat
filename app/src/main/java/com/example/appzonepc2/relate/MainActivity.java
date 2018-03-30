@@ -14,15 +14,24 @@ import com.example.appzonepc2.relate.Fragment.FriendsFragment;
 import com.example.appzonepc2.relate.Fragment.RequestFragment;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ServerValue;
+
 //todo: there should be transitions from one page to another
 //todo there should be options to delete account
 //todo check if account already exists
+//todo: find a way to abstract all your network call in a class
+//todo: find a way to make this code modular
+//todo: shima recyclerview
 public class MainActivity extends AppCompatActivity {
 
     FirebaseAuth mAuth;
     android.support.v7.widget.Toolbar toolbar;
     TabLayout tabLayout;
     ViewPager viewPager;
+    FirebaseUser currentUser;
+    DatabaseReference userReference;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,6 +39,16 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         mAuth = FirebaseAuth.getInstance();
+        currentUser = mAuth.getCurrentUser();
+
+        if(currentUser != null){
+            String uid = mAuth.getCurrentUser().getUid();
+
+            userReference = FirebaseDatabase.getInstance().getReference().child("Users").child(uid);
+
+        }
+
+
         toolbar = findViewById(R.id.main_page_toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle("Relate");
@@ -51,14 +70,22 @@ public class MainActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
 
-        FirebaseUser currentUser = mAuth.getCurrentUser();
+         currentUser = mAuth.getCurrentUser();
 
-        if(currentUser == null){
+        if(currentUser == null){ //setting the offline is done by relateOffline class already
             logOutUser();
+        }else if(currentUser != null){ //if user is logged in, set the login status to true
+              userReference.child("online").setValue("true");
         }
     }
 
-
+    @Override
+    protected void onStop() { //when user minimizes app
+        super.onStop();
+        if(currentUser != null){ //if user is logged in when he minimizes, set last seen time which shows he has logged out
+            userReference.child("online").setValue(ServerValue.TIMESTAMP);
+        }
+    }
 
     private void logOutUser(){
         Intent startPageIntent = new Intent(this, StartPageActivity.class);
@@ -82,6 +109,9 @@ public class MainActivity extends AppCompatActivity {
         if(menuitem == R.id.main_logout_button){
             //TODO: Ask if the user is sure for signing out
             //TODO: display a progress bar
+            if(currentUser!=null){
+                userReference.child("online").setValue(ServerValue.TIMESTAMP); //when user logs out, set the last seen
+            }
             mAuth.signOut();
             logOutUser();
         }

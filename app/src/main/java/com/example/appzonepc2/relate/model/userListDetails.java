@@ -6,6 +6,7 @@ package com.example.appzonepc2.relate.model;
 
 
 public class userListDetails {
+    //make sure this fields matches the database fields
     private String user_name;
     private String user_status;
     private String user_image;

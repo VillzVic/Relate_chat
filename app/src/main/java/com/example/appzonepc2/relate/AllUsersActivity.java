@@ -56,7 +56,7 @@ public class AllUsersActivity extends AppCompatActivity {
 
 
 
-
+    //retrieve the user's data in real time
     @Override
     protected void onStart() {
         super.onStart();

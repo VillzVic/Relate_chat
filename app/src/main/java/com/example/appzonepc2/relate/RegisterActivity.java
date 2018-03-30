@@ -79,7 +79,7 @@ public class RegisterActivity extends AppCompatActivity {
                                 String device_token = FirebaseInstanceId.getInstance().getToken();
                                 //store the data into the databasel
                                 mDatabase = FirebaseDatabase.getInstance().getReference().child("Users").child(userId);
-
+                                //todo: get the user id for device token here instead
                                 mDatabase.child("user_name").setValue(name);
                                 mDatabase.child("user_status").setValue("Hey There, am using relate");
                                 mDatabase.child("user_image").setValue("default_profile");

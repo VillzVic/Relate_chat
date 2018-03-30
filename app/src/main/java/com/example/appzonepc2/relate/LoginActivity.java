@@ -21,6 +21,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.iid.FirebaseInstanceId;
 
 //todo : use the same fragment to for signup and login like belvi did
+//todo: use transition between screen to share logo between login and register
 public class LoginActivity extends AppCompatActivity {
     private EditText email, password;
     private Button loginButton;
@@ -66,6 +67,7 @@ public class LoginActivity extends AppCompatActivity {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             if(task.isSuccessful()){
+                                //todo: use a broadcast receiver to broadcast an intent containing (sender)  user id
                                 String online_user_id = mAuth.getCurrentUser().getUid();
                                 String device_token = FirebaseInstanceId.getInstance().getToken(); // to get the current user token
 

@@ -3,4 +3,5 @@
     <color name="colorPrimary">#03A9F4</color>
     <color name="colorPrimaryDark">#039BE5</color>
     <color name="colorAccent">#40C4FF</color>
+    <color name="message_background">#ccc</color>
 </resources>

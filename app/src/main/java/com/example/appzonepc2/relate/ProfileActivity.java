@@ -20,6 +20,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.squareup.picasso.Callback;
+import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 
 import java.text.SimpleDateFormat;
@@ -57,7 +59,7 @@ public class ProfileActivity extends AppCompatActivity {
 
         databaseReference = FirebaseDatabase.getInstance().getReference().child("Users");
         databaseReference.keepSynced(true);
-        //get the user id from the list
+        //get the user id from the activity that launches this activity
          receiver_user_id = getIntent().getStringExtra("visit_user_data");
 
 
@@ -67,26 +69,37 @@ public class ProfileActivity extends AppCompatActivity {
         friendReference = FirebaseDatabase.getInstance().getReference().child("Friends");
         friendReference.keepSynced(true);
 
+        //from the receiver user id, retrieve the user's details
         databaseReference.child(receiver_user_id).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 String name = dataSnapshot.child("user_name").getValue().toString();
                 String status = dataSnapshot.child("user_status").getValue().toString();
-                String image = dataSnapshot.child("user_image").getValue().toString();
+                final String image = dataSnapshot.child("user_image").getValue().toString();
 
                 username.setText(name);
                 userstatus.setText(status);
-                Picasso.with(ProfileActivity.this).load(image).placeholder(R.drawable.profileview).into(imageView);
+                Picasso.with(ProfileActivity.this).load(image).networkPolicy(NetworkPolicy.OFFLINE).placeholder(R.drawable.profileview).into(imageView, new Callback() {
+                    @Override
+                    public void onSuccess() {
+
+                    }
+
+                    @Override
+                    public void onError() {
+                        Picasso.with(ProfileActivity.this).load(image).placeholder(R.drawable.profileview).into(imageView);
+                    }
+                });
 
 
                 //handle the text that the request button should show based on if request has been sent or not //handle it when the page is loaded
                 //At a point sender will become receiver and vice versa,its negates
-                friendRequestReference.child(sender_user_id)
+                friendRequestReference.child(sender_user_id) //if the users are friends, freinds request fragment would be deleted
                         .addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
                             public void onDataChange(DataSnapshot dataSnapshot) {
                                 //if request has been sent, friends request node
-                              if(dataSnapshot.exists()){
+
                                   if(dataSnapshot.hasChild(receiver_user_id)){
                                       //At a point sender will become receiver and vice versa,its negates
                                       String reg_type = dataSnapshot.child(receiver_user_id).child("request_type").getValue().toString();
@@ -116,14 +129,14 @@ public class ProfileActivity extends AppCompatActivity {
 
                                       }
                                   }
-                              } else{ // if the users  are friends, friends node
+                               else{ // if the users  are friends, friends node
                                   friendReference.child(sender_user_id)
                                           .addListenerForSingleValueEvent(new ValueEventListener() {
                                               @Override
                                               public void onDataChange(DataSnapshot dataSnapshot) {
                                                   if(dataSnapshot.hasChild(receiver_user_id)){
                                                       CURRENT_STATE = "friends";
-                                                      sendFriendRequestBtn.setText("Unfriend this person");
+                                                      sendFriendRequestBtn.setText("Unfriend");
 
                                                       declineFriendRequestBtn.setVisibility(View.INVISIBLE);
                                                       declineFriendRequestBtn.setEnabled(false);
@@ -281,6 +294,20 @@ public class ProfileActivity extends AppCompatActivity {
 
                                                 declineFriendRequestBtn.setVisibility(View.INVISIBLE);
                                                 declineFriendRequestBtn.setEnabled(false);
+
+//                                               notificationReference.child(receiver_user_id).removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
+//                                                   @Override
+//                                                   public void onComplete(@NonNull Task<Void> task) {
+//                                                    if(task.isSuccessful()){
+//                                                        sendFriendRequestBtn.setEnabled(true);
+//                                                        CURRENT_STATE = "not_friends";
+//                                                        sendFriendRequestBtn.setText("Send Friend Request");
+//
+//                                                        declineFriendRequestBtn.setVisibility(View.INVISIBLE);
+//                                                        declineFriendRequestBtn.setEnabled(false);
+//                                                    }
+//                                                   }
+//                                               });
                                             }
 
                                         }
@@ -296,11 +323,11 @@ public class ProfileActivity extends AppCompatActivity {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-MMMM-yyyy");
         final String date = simpleDateFormat.format(calender.getTime());
         //sender and receiver became friends on this date
-        friendReference.child(sender_user_id).child(receiver_user_id).setValue(date)
+        friendReference.child(sender_user_id).child(receiver_user_id).child("date").setValue(date)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
-                        friendReference.child(receiver_user_id).child(sender_user_id).setValue(date)
+                        friendReference.child(receiver_user_id).child(sender_user_id).child("date").setValue(date)
                                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                                     @Override
                                     public void onSuccess(Void aVoid) {
