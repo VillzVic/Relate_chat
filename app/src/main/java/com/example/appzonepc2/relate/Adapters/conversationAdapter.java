@@ -83,7 +83,7 @@ public class conversationAdapter extends RecyclerView.Adapter<conversationAdapte
     public class conversationViewHolder extends RecyclerView.ViewHolder {
 
         private TextView messagetext;
-        private CircleImageView imageView;c
+        private CircleImageView imageView;
         private TextView time;
 
         public conversationViewHolder(View itemView) {
