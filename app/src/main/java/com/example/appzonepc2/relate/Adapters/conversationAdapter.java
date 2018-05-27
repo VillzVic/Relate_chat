@@ -1,6 +1,7 @@
 package com.example.appzonepc2.relate.Adapters;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
@@ -30,6 +31,7 @@ public class conversationAdapter extends RecyclerView.Adapter<conversationAdapte
     private Context ctx;
     private FirebaseAuth mAuth;
 
+
     public conversationAdapter(ArrayList<message_model> usermessageList, Context ctx) {
         this.usermessageList = usermessageList;
         this.ctx = ctx;
@@ -45,21 +47,29 @@ public class conversationAdapter extends RecyclerView.Adapter<conversationAdapte
     }
 
     @Override
-    public void onBindViewHolder(@NonNull conversationViewHolder conversationViewHolder, int i) {
-    message_model model = usermessageList.get(i);
+    public void onBindViewHolder(@NonNull conversationViewHolder conversationViewHolder, int position) {
+    message_model model = usermessageList.get(position);
 
     String message_sender_id = mAuth.getCurrentUser().getUid();
 
     String from_user_id = model.getFrom();
+    long time = model.getTime(); //cast this time
+    Boolean seen = model.getSeen();
+    String type = model.getType();
+
+
 
     if(message_sender_id.equals(from_user_id)){
         conversationViewHolder.messagetext.setBackgroundResource(R.drawable.message_background);
-        conversationViewHolder.messagetext.setGravity(Gravity.RIGHT);
+        conversationViewHolder.messagetext.setGravity(Gravity.END);
+
+        conversationViewHolder.messagetext.setTextColor(Color.WHITE);
     }else{
         conversationViewHolder.messagetext.setGravity(Gravity.START);
     }
 
     conversationViewHolder.messagetext.setText(model.getMessage());
+//    conversationViewHolder.time.setText(String.valueOf());
 
 
     }
@@ -73,13 +83,16 @@ public class conversationAdapter extends RecyclerView.Adapter<conversationAdapte
     public class conversationViewHolder extends RecyclerView.ViewHolder {
 
         private TextView messagetext;
-        private CircleImageView imageView;
+        private CircleImageView imageView;c
+        private TextView time;
 
         public conversationViewHolder(View itemView) {
             super(itemView);
+            getAdapterPosition();
 
             messagetext = itemView.findViewById(R.id.message_text);
 //            imageView = itemView.findViewById(R.id.message_image);
+//            time = itemView.findViewById(R.id.message_time);
         }
     }
 }

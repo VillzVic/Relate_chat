@@ -70,7 +70,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
 
-         currentUser = mAuth.getCurrentUser();
+         currentUser = mAuth.getCurrentUser(); //if u have signed in(using signInWithUserAndPassword) mAuth is instantiated
 
         if(currentUser == null){ //setting the offline is done by relateOffline class already
             logOutUser();

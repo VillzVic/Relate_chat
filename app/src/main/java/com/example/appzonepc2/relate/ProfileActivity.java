@@ -54,7 +54,7 @@ public class ProfileActivity extends AppCompatActivity {
 
         mAuth = FirebaseAuth.getInstance();
 
-        notificationReference = FirebaseDatabase.getInstance().getReference().child("Notification");
+        notificationReference = FirebaseDatabase.getInstance().getReference().child("Notification_Request");
         notificationReference.keepSynced(true);
 
         databaseReference = FirebaseDatabase.getInstance().getReference().child("Users");
@@ -295,19 +295,19 @@ public class ProfileActivity extends AppCompatActivity {
                                                 declineFriendRequestBtn.setVisibility(View.INVISIBLE);
                                                 declineFriendRequestBtn.setEnabled(false);
 
-//                                               notificationReference.child(receiver_user_id).removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
-//                                                   @Override
-//                                                   public void onComplete(@NonNull Task<Void> task) {
-//                                                    if(task.isSuccessful()){
-//                                                        sendFriendRequestBtn.setEnabled(true);
-//                                                        CURRENT_STATE = "not_friends";
-//                                                        sendFriendRequestBtn.setText("Send Friend Request");
-//
-//                                                        declineFriendRequestBtn.setVisibility(View.INVISIBLE);
-//                                                        declineFriendRequestBtn.setEnabled(false);
-//                                                    }
-//                                                   }
-//                                               });
+                                               notificationReference.child(receiver_user_id).removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                   @Override
+                                                   public void onComplete(@NonNull Task<Void> task) {
+                                                    if(task.isSuccessful()){
+                                                        sendFriendRequestBtn.setEnabled(true);
+                                                        CURRENT_STATE = "not_friends";
+                                                        sendFriendRequestBtn.setText("Send Friend Request");
+
+                                                        declineFriendRequestBtn.setVisibility(View.INVISIBLE);
+                                                        declineFriendRequestBtn.setEnabled(false);
+                                                    }
+                                                   }
+                                               });
                                             }
 
                                         }

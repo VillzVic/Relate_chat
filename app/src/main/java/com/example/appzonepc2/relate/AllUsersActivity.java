@@ -62,7 +62,7 @@ public class AllUsersActivity extends AppCompatActivity {
         super.onStart();
 
         FirebaseRecyclerAdapter<userListDetails, AllUserViewHolder> firebaseRecyclerAdapter = new FirebaseRecyclerAdapter<userListDetails, AllUserViewHolder>
-                (userListDetails.class,R.layout.user_mock,AllUserViewHolder.class,mReference) {
+                (userListDetails.class, R.layout.user_mock,AllUserViewHolder.class,mReference) {
 
 
             @Override

@@ -39,7 +39,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
  */
 
 public class FriendsFragment extends android.support.v4.app.Fragment {
-    @Nullable
+
 
     private String online_user_id;
     private RecyclerView mRecyclerView;
@@ -47,6 +47,9 @@ public class FriendsFragment extends android.support.v4.app.Fragment {
     private DatabaseReference friendsReference;
     private DatabaseReference userReference;
     private FirebaseAuth mAuth;
+
+    public FriendsFragment() {
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
@@ -72,8 +75,8 @@ public class FriendsFragment extends android.support.v4.app.Fragment {
         super.onStart();
 
         FirebaseRecyclerAdapter<friends, FriendsViewHolder> friendsRecyclerAdapter =
-                new FirebaseRecyclerAdapter<friends, FriendsViewHolder>
-                        (friends.class,R.layout.user_mock,FriendsViewHolder.class,friendsReference){
+                new FirebaseRecyclerAdapter  <friends, FriendsViewHolder>
+                        (friends.class,R.layout.friends_mock,FriendsViewHolder.class,friendsReference){
 
                     @Override
                     protected void populateViewHolder(final FriendsViewHolder viewHolder, friends model, final int position) {
@@ -93,7 +96,7 @@ public class FriendsFragment extends android.support.v4.app.Fragment {
                                 viewHolder.setUserImage(userImage, getContext());
 
                                 if(dataSnapshot.hasChild("online")){
-                                    String online = (String) dataSnapshot.child("online").getValue();
+                                    String online = String.valueOf(dataSnapshot.child("online").getValue());
 
                                     viewHolder.setUserOnlineStatus(online);
                                 }
@@ -156,7 +159,12 @@ public class FriendsFragment extends android.support.v4.app.Fragment {
         mRecyclerView.setAdapter(friendsRecyclerAdapter);
     }
 
-    private class FriendsViewHolder extends RecyclerView.ViewHolder{
+    @Override
+    public void onStop() {
+        super.onStop();
+    }
+
+    public static class FriendsViewHolder extends RecyclerView.ViewHolder{
         View mView; //if you make it static, it will retrieve only one user, each user won't have instances of the the view
 
         public FriendsViewHolder(View itemView) {
@@ -165,17 +173,17 @@ public class FriendsFragment extends android.support.v4.app.Fragment {
         }
 
         public void setDate(String date) {
-            TextView textView = mView.findViewById(R.id.all_users_status);
-            textView.setText(date);
+            TextView textView = mView.findViewById(R.id.friends_status);
+            textView.setText("Friends Since: " +  date);
         }
 
         public void setUsername(String username){
-            TextView userTextview = mView.findViewById(R.id.all_users_username);
+            TextView userTextview = mView.findViewById(R.id.friends_username);
             userTextview.setText(username);
         }
 
         public void setUserImage(final String userimage, final Context ctx){
-            final CircleImageView imageView = mView.findViewById(R.id.all_users_profile_image);
+            final CircleImageView imageView = mView.findViewById(R.id.friends_profile_image);
 
             Picasso.with(ctx).load(userimage).placeholder(R.drawable.profileview).networkPolicy(NetworkPolicy.OFFLINE)
                     .into(imageView, new Callback() {
@@ -192,12 +200,12 @@ public class FriendsFragment extends android.support.v4.app.Fragment {
         }
 
         public void setUserOnlineStatus(String online){
-            ImageView imageView = mView.findViewById(R.id.online_status);
+            ImageView imageView = mView.findViewById(R.id.friends_online);
 
             if(online.equals("true")){
                 imageView.setVisibility(View.VISIBLE);
             }else{
-                imageView.setVisibility(View.INVISIBLE);
+
             }
         }
 

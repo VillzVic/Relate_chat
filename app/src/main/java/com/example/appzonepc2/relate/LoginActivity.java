@@ -82,16 +82,17 @@ public class LoginActivity extends AppCompatActivity {
                                             }
                                         });
 
-
+                                mProgressDialog.dismiss();
                             }
-                            //check for internet connection
+                            //todo:check for internet connection
 //                            else if(){
 //
 //                            }
                             else{
                                 Toast.makeText(getApplicationContext(),"Wrong Email Address or Password", Toast.LENGTH_LONG).show();
+                                mProgressDialog.dismiss();
                             }
-                            mProgressDialog.dismiss();
+
                         }
                     });
         }

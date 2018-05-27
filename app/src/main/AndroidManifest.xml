@@ -51,8 +51,10 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-        <activity android:name=".ConversationScreen"
-            android:parentActivityName=".MainActivity"></activity>
+        <activity
+            android:name=".ConversationScreen"
+            android:parentActivityName=".MainActivity" />
+        <activity android:name=".AsynActivity"></activity>
     </application>
 
 </manifest>

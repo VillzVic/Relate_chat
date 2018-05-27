@@ -34,7 +34,9 @@ import com.squareup.picasso.Callback;
 import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -69,24 +71,28 @@ public class ConversationScreen extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_conversation_screen);
-
+        initToolbar();
         layoutManager = new LinearLayoutManager(this);
         usermessageList = new ArrayList<>();
         messagesList = findViewById(R.id.messages);
+
+        rootref = FirebaseDatabase.getInstance().getReference();
+
+
+
         mAdapter = new conversationAdapter(usermessageList,ConversationScreen.this);
         messagesList.setHasFixedSize(true);
         messagesList.setLayoutManager(layoutManager);
         messagesList.setAdapter(mAdapter);
-
-        fetchMessage();
-
         mAuth = FirebaseAuth.getInstance();
         sender_id = mAuth.getCurrentUser().getUid();
 
         receiver_userid = getIntent().getStringExtra("visit_user_id").toString();
         username = getIntent().getStringExtra("user_name").toString();
 
-        initToolbar();
+
+
+
 
 
         camera = findViewById(R.id.camera_button);
@@ -99,9 +105,9 @@ public class ConversationScreen extends AppCompatActivity {
         user_last_seen = findViewById(R.id.custom_last_seen);
         circular_image_view = findViewById(R.id.custom_profile_image);
 
+        fetchMessage();
         user_profile_name.setText(username);
 
-        rootref = FirebaseDatabase.getInstance().getReference();
 
         rootref.child("Users").child(receiver_userid).addValueEventListener(new ValueEventListener() {
             @Override
@@ -197,6 +203,7 @@ public class ConversationScreen extends AppCompatActivity {
     private void sendMessage() {
         String message = editText.getText().toString();
 
+
         if(!TextUtils.isEmpty(message)){
             String message_sender_ref = "Messages/" + sender_id + "/" + receiver_userid;
             String message_receiver_ref = "Messages/" + receiver_userid + "/" + sender_id;
@@ -228,7 +235,8 @@ public class ConversationScreen extends AppCompatActivity {
                     editText.setText("");
                 }
             });
-            LocalBroadcastManager.getInstance(ConversationScreen.this).sendBroadcast(new Intent("last_message").putExtra("message", message));
+            LocalBroadcastManager.getInstance(ConversationScreen.this).sendBroadcast(new Intent("last_message")
+                        .putExtra("message", message));
 
         }else{
             Toast.makeText(ConversationScreen.this,"Please write a message.",Toast.LENGTH_LONG).show();

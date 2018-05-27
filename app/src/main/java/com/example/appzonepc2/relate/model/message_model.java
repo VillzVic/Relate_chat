@@ -1,10 +1,10 @@
 package com.example.appzonepc2.relate.model;
 
 /**
- * Created by appzonepc2 on 28/03/2018.
+ * Created by orievictor on 28/03/2018.
  */
 
-public class    message_model {
+public class  message_model {
 
     private String message;
     private String type;

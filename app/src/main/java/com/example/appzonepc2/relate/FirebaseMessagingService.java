@@ -31,7 +31,7 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
 
 
 
-        Intent resultIntent = new Intent(clickAction); //check the activity that has the click action in the manifest, in this case it is profile activity
+        Intent resultIntent = new Intent(this, ProfileActivity.class); //check the activity that has the click action in the manifest, in this case it is profile activity
         resultIntent.putExtra("visit_user_data", sender_user_id);
 
         PendingIntent resultPendingIntent =  PendingIntent.getActivity(this,0, resultIntent, PendingIntent.FLAG_UPDATE_CURRENT);

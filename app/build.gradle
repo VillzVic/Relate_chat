@@ -20,6 +20,7 @@ android {
         }
     }
     buildToolsVersion '27.0.2'
+
 }
 
 configurations.all {
@@ -28,7 +29,7 @@ configurations.all {
     }
 }
 configurations {
-    compile.exclude group: 'com.android.support', module: 'support-v7'
+    compile.exclude group: 'com.android.support', module: 'support-v4'
 }
 
 dependencies {
