@@ -3,6 +3,9 @@ package com.example.appzonepc2.relate.model;
 public class request {
     String user_name, user_status, user_thumb_image;
 
+    public request() {
+    }
+
     public request(String user_name, String user_status, String user_thumb_image) {
         this.user_name = user_name;
         this.user_status = user_status;
