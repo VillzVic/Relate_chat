@@ -171,7 +171,9 @@ public class ProfileActivity extends AppCompatActivity {
         declineFriendRequestBtn.setVisibility(View.INVISIBLE);
         declineFriendRequestBtn.setEnabled(false);
 
+
         if(!sender_user_id.equals(receiver_user_id)){
+            //same button handling different things.
             sendFriendRequestBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -187,9 +189,8 @@ public class ProfileActivity extends AppCompatActivity {
 
                     }else if(CURRENT_STATE.equals("request_received")){
 
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                             AcceptFriendRequest();
-                        }
+
                     }else if(CURRENT_STATE.equals("friends")){
                         unFriend();
                     }

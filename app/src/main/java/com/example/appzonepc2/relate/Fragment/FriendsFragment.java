@@ -114,7 +114,7 @@ public class FriendsFragment extends android.support.v4.app.Fragment {
 
                                         builder.setItems(options, new DialogInterface.OnClickListener() {
                                             @Override
-                                            public void onClick(DialogInterface dialog, int postion) {
+                                            public void onClick(DialogInterface dialog, int position) {
                                                 if(position == 0){
                                                     Intent profileIntent = new Intent(getContext(), ProfileActivity.class);
                                                     profileIntent.putExtra("visit_user_data", list_user_id);
