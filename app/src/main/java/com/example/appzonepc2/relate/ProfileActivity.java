@@ -189,9 +189,8 @@ public class ProfileActivity extends AppCompatActivity {
 
                     }else if(CURRENT_STATE.equals("request_received")){
 
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                             AcceptFriendRequest();
-                        }
+
                     }else if(CURRENT_STATE.equals("friends")){
                         unFriend();
                     }

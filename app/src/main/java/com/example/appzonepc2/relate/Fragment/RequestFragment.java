@@ -130,32 +130,6 @@ public class RequestFragment extends android.support.v4.app.Fragment {
                                            }
                                        });
 
-//                                       viewHolder.myView.setOnClickListener(new View.OnClickListener() {
-//                                           @Override
-//                                           public void onClick(View v) {
-//                                               CharSequence options[] = new CharSequence[]
-//                                                       {
-//                                                               "Accept Friend Request", "Cancel Friend Request"
-//                                                       };
-//
-//                                               AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-//                                               builder.setTitle("Friend request options");
-//
-//                                               builder.setItems(options, new DialogInterface.OnClickListener() {
-//                                                   @Override
-//                                                   public void onClick(DialogInterface dialog, int position) {
-//                                                       if(position == 0){
-//                                                           AcceptFriendRequest(online_user_id,list_user_id);
-//                                                       }
-//                                                       if(position == 1){
-//                                                           cancelFriendRequest(online_user_id, list_user_id);
-//                                                       }
-//                                                   }
-//                                               });
-//
-//                                               builder.show();
-//                                           }
-//                                       });
                                    }
 
                                    @Override
@@ -166,10 +140,12 @@ public class RequestFragment extends android.support.v4.app.Fragment {
                            }else if(request_type.equals("sent")){
 
                                Button request_sent_btn = viewHolder.myView.findViewById(R.id.accept_button);
+                               request_sent_btn.setEnabled(false);
                                request_sent_btn.setText("Request sent");
+                               //todo:set background color for this button to grey
 
 
-                               Button request_received_btn = viewHolder.myView.findViewById(R.id.decline_button);
+                               final Button request_received_btn = viewHolder.myView.findViewById(R.id.decline_button);
                                request_received_btn.setText("Cancel");
 
                                userReference.child(list_user_id).addValueEventListener(new ValueEventListener() {
@@ -180,8 +156,7 @@ public class RequestFragment extends android.support.v4.app.Fragment {
 
                                        viewHolder.setUserName(user_name);
                                        viewHolder.setUserImage(user_image, getContext());
-                                       Button cancelButton = viewHolder.myView.findViewById(R.id.decline_button);
-                                       cancelButton.setOnClickListener(new View.OnClickListener() {
+                                       request_received_btn.setOnClickListener(new View.OnClickListener() {
                                            @Override
                                            public void onClick(View v) {
                                                cancelFriendRequest(online_user_id, list_user_id);
@@ -273,7 +248,7 @@ public class RequestFragment extends android.support.v4.app.Fragment {
     }
 
 
-    public static class RequestViewHolder extends RecyclerView.ViewHolder{
+    public static class RequestViewHolder extends RecyclerView.ViewHolder {
         View myView;
         TextView userName;
         CircleImageView imageView;
@@ -284,6 +259,7 @@ public class RequestFragment extends android.support.v4.app.Fragment {
 
             userName = myView.findViewById(R.id.request_user);
             imageView = myView.findViewById(R.id.request_profile_image);
+
         }
 
         public void setUserName(String username){
@@ -304,5 +280,7 @@ public class RequestFragment extends android.support.v4.app.Fragment {
                         }
                     });
         }
+
+
     }
 }

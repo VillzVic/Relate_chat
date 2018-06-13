@@ -2,6 +2,8 @@ package com.example.appzonepc2.relate;
 
 //todo: change every network call to be on the background using belvi's style, context.StartService(intent) or AsyncTask
 import android.content.Intent;
+import android.net.Uri;
+import android.support.annotation.NonNull;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -22,6 +24,7 @@ import com.example.appzonepc2.relate.Adapters.conversationAdapter;
 import com.example.appzonepc2.relate.Utils.lastSeen;
 import com.example.appzonepc2.relate.model.message_model;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -30,9 +33,14 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ServerValue;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
+import com.theartofdev.edmodo.cropper.CropImage;
+import com.theartofdev.edmodo.cropper.CropImageView;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -42,7 +50,7 @@ import java.util.Map;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class ConversationScreen extends AppCompatActivity {
+public class ConversationScreen extends AppCompatActivity implements View.OnClickListener {
     private String receiver_userid;
     private String username;
     private Toolbar toolbar;
@@ -52,18 +60,17 @@ public class ConversationScreen extends AppCompatActivity {
     private TextView user_profile_name;
     private TextView user_last_seen;
     private CircleImageView circular_image_view;
-
     private FirebaseAuth mAuth;
+    private StorageReference messageImageRef;
     private String sender_id;
     private DatabaseReference rootref;
-
     private ImageView camera, send;
     private AppCompatEditText editText;
-
     private RecyclerView messagesList;
     private ArrayList<message_model> usermessageList;
     private conversationAdapter mAdapter;
     private LinearLayoutManager layoutManager;
+    private static int Gallery_pick = 0;
 
 
 
@@ -77,7 +84,7 @@ public class ConversationScreen extends AppCompatActivity {
         messagesList = findViewById(R.id.messages);
 
         rootref = FirebaseDatabase.getInstance().getReference();
-
+        messageImageRef = FirebaseStorage.getInstance().getReference().child("message_images");  //folder
 
 
         mAdapter = new conversationAdapter(usermessageList,ConversationScreen.this);
@@ -92,13 +99,12 @@ public class ConversationScreen extends AppCompatActivity {
 
 
 
-
-
-
         camera = findViewById(R.id.camera_button);
         send = findViewById(R.id.send_button);
         editText = findViewById(R.id.inputtext);
 
+
+        camera.setOnClickListener(this);
 
 
         user_profile_name = findViewById(R.id.custom_profile_name);
@@ -153,6 +159,39 @@ public class ConversationScreen extends AppCompatActivity {
         });
 
 
+    }
+
+    private void cameraLaunch() {
+        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+        intent.setType("image/*");
+        startActivityForResult(intent, Gallery_pick);
+
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if(requestCode == Gallery_pick && resultCode == RESULT_OK && data != null) {
+            Uri imageUri = data.getData();
+
+            String message_sender_ref = "Messages/" + sender_id + "/" + receiver_userid;
+            String message_receiver_ref = "Messages/" + receiver_userid + "/" + sender_id;
+
+            DatabaseReference user_message_key = rootref.child("Messages").child(sender_id).child(receiver_userid).push();
+
+            String message_push_id = user_message_key.getKey();
+
+            StorageReference filepath = messageImageRef.child(message_push_id+".jpg");
+            filepath.putFile(imageUri).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
+                    String imageUrl = task.getResult().getDownloadUrl().toString();
+                    Toast.makeText(ConversationScreen.this, "Image Uploaded succesfully", Toast.LENGTH_SHORT).show();
+                }
+            });
+
+        }
     }
 
     private void fetchMessage() {
@@ -235,11 +274,21 @@ public class ConversationScreen extends AppCompatActivity {
                     editText.setText("");
                 }
             });
-            LocalBroadcastManager.getInstance(ConversationScreen.this).sendBroadcast(new Intent("last_message")
-                        .putExtra("message", message));
+//            LocalBroadcastManager.getInstance(ConversationScreen.this).sendBroadcast(new Intent("last_message")
+//                        .putExtra("message", message));
 
         }else{
             Toast.makeText(ConversationScreen.this,"Please write a message.",Toast.LENGTH_LONG).show();
+        }
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch(v.getId()){
+            case R.id.camera_button:
+
+                cameraLaunch();
+                break;
         }
     }
 }
