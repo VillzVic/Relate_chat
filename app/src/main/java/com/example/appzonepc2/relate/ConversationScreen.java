@@ -1,6 +1,7 @@
 package com.example.appzonepc2.relate;
 
 //todo: change every network call to be on the background using belvi's style, context.StartService(intent) or AsyncTask
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.support.annotation.NonNull;
@@ -71,6 +72,7 @@ public class ConversationScreen extends AppCompatActivity implements View.OnClic
     private conversationAdapter mAdapter;
     private LinearLayoutManager layoutManager;
     private static int Gallery_pick = 0;
+    private ProgressDialog dialog;
 
 
 
@@ -82,6 +84,7 @@ public class ConversationScreen extends AppCompatActivity implements View.OnClic
         layoutManager = new LinearLayoutManager(this);
         usermessageList = new ArrayList<>();
         messagesList = findViewById(R.id.messages);
+        dialog = new ProgressDialog(this);
 
         rootref = FirebaseDatabase.getInstance().getReference();
         messageImageRef = FirebaseStorage.getInstance().getReference().child("message_images");  //folder
@@ -169,25 +172,68 @@ public class ConversationScreen extends AppCompatActivity implements View.OnClic
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    protected void onActivityResult(int requestCode, int resultCode, final Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if(requestCode == Gallery_pick && resultCode == RESULT_OK && data != null) {
-            Uri imageUri = data.getData();
+        if(requestCode == Gallery_pick && resultCode ==  RESULT_OK && data != null) {
 
-            String message_sender_ref = "Messages/" + sender_id + "/" + receiver_userid;
-            String message_receiver_ref = "Messages/" + receiver_userid + "/" + sender_id;
+            dialog.setTitle("Sending image");
+            dialog.setMessage("Please wait...");
+            dialog.setCanceledOnTouchOutside(false);
+            dialog.show();
+
+            final Uri imageUri = data.getData();
+
+            final String message_sender_ref = "Messages/" + sender_id + "/" + receiver_userid;
+            final String message_receiver_ref = "Messages/" + receiver_userid + "/" + sender_id;
 
             DatabaseReference user_message_key = rootref.child("Messages").child(sender_id).child(receiver_userid).push();
 
-            String message_push_id = user_message_key.getKey();
+            final String message_push_id = user_message_key.getKey();
 
             StorageReference filepath = messageImageRef.child(message_push_id+".jpg");
             filepath.putFile(imageUri).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
                 @Override
                 public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
-                    String imageUrl = task.getResult().getDownloadUrl().toString();
-                    Toast.makeText(ConversationScreen.this, "Image Uploaded succesfully", Toast.LENGTH_SHORT).show();
+                    if(task.isSuccessful()){
+                        String imageUrl = task.getResult().getDownloadUrl().toString();
+
+                        Map messageTextBody = new HashMap();
+
+                        messageTextBody.put("message", imageUrl);
+                        messageTextBody.put("seen", false);
+                        messageTextBody.put("type","image");
+                        messageTextBody.put("time", ServerValue.TIMESTAMP);
+                        messageTextBody.put("from", sender_id);
+
+                        Map messageBodyDetails = new HashMap();
+
+                        messageBodyDetails.put(message_sender_ref + "/" + message_push_id, messageTextBody);
+
+                        messageBodyDetails.put(message_receiver_ref + "/" + message_push_id, messageTextBody);
+
+                        rootref.updateChildren(messageBodyDetails, new DatabaseReference.CompletionListener() {
+                            @Override
+                            public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+                                if(databaseError != null){
+                                    Log.d("chat_log", databaseError.getMessage().toString());
+                                }
+
+                                editText.setText("");
+
+                                dialog.dismiss();
+                            }
+                        });
+
+                        Toast.makeText(ConversationScreen.this, "Image Uploaded succesfully", Toast.LENGTH_SHORT).show();
+
+                        dialog.dismiss();
+
+                    }else{
+                        Toast.makeText(ConversationScreen.this, "An Error occurred while sending the image", Toast.LENGTH_SHORT).show();
+
+                        dialog.dismiss();
+                    }
                 }
             });
 
@@ -201,6 +247,7 @@ public class ConversationScreen extends AppCompatActivity implements View.OnClic
                     public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                         message_model mModel = dataSnapshot.getValue(message_model.class);
                         usermessageList.add(mModel);
+                        messagesList.smoothScrollToPosition(messagesList.getAdapter().getItemCount());
                         mAdapter.notifyDataSetChanged();
                     }
 

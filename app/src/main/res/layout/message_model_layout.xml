@@ -2,29 +2,33 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent" android:layout_height="wrap_content">
 
-    <TextView
+    <android.support.v7.widget.AppCompatTextView
         android:id="@+id/message_text"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@drawable/message_background2"
         android:layout_marginTop="10dp"
         android:inputType="textMultiLine"
         android:paddingBottom="10dp"
         android:layout_marginLeft="5dp"
-        android:paddingLeft="5dp"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="5dp"
+        android:layout_marginBottom="10dp"
+        android:minWidth="125dp"
+        android:paddingLeft="10dp"
         android:paddingRight="10dp"
         android:paddingTop="5dp"
         android:text="Message text here"
         android:textColor="@android:color/black"
         android:textSize="18dp" />
 
-    <TextView
-        android:id="@+id/message_time"
-        android:layout_below="@+id/message_text"
-        android:layout_width="wrap_content"
-        android:layout_marginBottom="10dp"
-        android:layout_height="wrap_content"
-        android:text="13:45"/>
+    <!--<TextView-->
+        <!--android:id="@+id/message_time"-->
+        <!--android:layout_below="@+id/message_text"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_marginBottom="10dp"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:text="13:45"/>-->
 
     <!--<de.hdodenhof.circleimageview.CircleImageView-->
         <!--android:id="@+id/message_image"-->
@@ -38,4 +42,7 @@
         <!--android:layout_marginTop="16dp"-->
         <!--android:paddingTop="0dp"-->
         <!--android:src="@drawable/profileview" />-->
+
+
+
 </RelativeLayout>

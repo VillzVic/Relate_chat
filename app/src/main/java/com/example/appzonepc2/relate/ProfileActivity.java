@@ -203,8 +203,7 @@ public class ProfileActivity extends AppCompatActivity {
         }
     }
 
-
-
+//todo:add delete account feature to, get access to users-user_d and call remove value
 
     @Override
     protected void onStart() {

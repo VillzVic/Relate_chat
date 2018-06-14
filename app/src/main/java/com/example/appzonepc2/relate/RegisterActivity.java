@@ -19,6 +19,9 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.iid.FirebaseInstanceId;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class RegisterActivity extends AppCompatActivity {
     private EditText username, email, Password;
     private Button signin;
@@ -80,6 +83,31 @@ public class RegisterActivity extends AppCompatActivity {
                                 //store the data into the databasel
                                 mDatabase = FirebaseDatabase.getInstance().getReference().child("Users").child(userId);
                                 //todo: get the user id for device token here instead
+
+                                //call update if somthing was there before
+//                                Map<String, Object> map = new HashMap<>();
+//                                map.put("user_name", name);
+//                                map.put("user_status", "Hey There, am using relate");
+//                                map.put("user_image", "default_profile");
+//                                map.put("device_token", device_token);
+//                                map.put("user_thumb_image", "default_image");
+//                                map.put("phone_number", "");
+//                                map.put("Address", "");
+//                                map.put("Email", email);
+//
+//                                mDatabase.updateChildren(map).addOnCompleteListener(new OnCompleteListener<Void>() {
+//                                    @Override
+//                                    public void onComplete(@NonNull Task<Void> task) {
+//                                        if(task.isSuccessful()){
+//
+//                                            Toast.makeText(getApplicationContext(), "Sign Up Successful, please login ",Toast.LENGTH_LONG).show();
+//                                            Intent mainIntent = new Intent(RegisterActivity.this, LoginActivity.class);
+//                                            startActivity(mainIntent);
+//                                            finish();
+//                                        }
+//                                    }
+//                                });
+
                                 mDatabase.child("user_name").setValue(name);
                                 mDatabase.child("user_status").setValue("Hey There, am using relate");
                                 mDatabase.child("user_image").setValue("default_profile");
