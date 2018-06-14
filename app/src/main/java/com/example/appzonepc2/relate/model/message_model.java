@@ -6,6 +6,11 @@ package com.example.appzonepc2.relate.model;
 
 public class  message_model {
 
+    public static final int TEXT_TYPE=0;
+    public static final int IMAGE_TYPE=1;
+
+
+
     private String message;
     private String type;
     private Boolean seen;
