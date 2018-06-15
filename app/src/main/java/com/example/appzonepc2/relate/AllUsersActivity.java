@@ -1,5 +1,6 @@
 package com.example.appzonepc2.relate;
 
+import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
@@ -7,7 +8,9 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
 import android.view.View;
+import android.widget.SearchView;
 import android.widget.TextView;
 
 import com.example.appzonepc2.relate.model.userListDetails;
@@ -16,6 +19,7 @@ import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
@@ -49,12 +53,68 @@ public class AllUsersActivity extends AppCompatActivity {
         mReference = FirebaseDatabase.getInstance().getReference().child("Users");
         mReference.keepSynced(true);
 
-
-
+        handleIntent(getIntent());
 
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.search, menu);
 
+        SearchManager searchManager =
+                (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        SearchView searchView =
+                (SearchView) menu.findItem(R.id.search).getActionView();
+        searchView.setSearchableInfo(
+                searchManager.getSearchableInfo(getComponentName()));
+
+        return true;
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+
+        handleIntent(intent);
+    }
+
+    private void handleIntent(Intent intent){
+        if(Intent.ACTION_SEARCH.equals(intent.getAction())){
+            String query = intent.getStringExtra(SearchManager.QUERY);
+
+            Query searchPeople = mReference.orderByChild("user_name")
+                    .startAt(query).endAt(query + "\uf8ff");
+
+            FirebaseRecyclerAdapter<userListDetails, AllUserViewHolder> firebaseRecyclerAdapter = new FirebaseRecyclerAdapter<userListDetails, AllUserViewHolder>
+                    (userListDetails.class, R.layout.user_mock,AllUserViewHolder.class, searchPeople) {
+
+
+                @Override
+                protected void populateViewHolder(AllUserViewHolder viewHolder, userListDetails model, final int position) {
+                    viewHolder.setUsername(model.getUser_name());
+                    viewHolder.setUserStatus(model.getUser_status());
+                    viewHolder.setUser_thumb_image(model.getUser_thumb_image(),getApplicationContext());
+
+                    viewHolder.mView.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            String visit_user_id = getRef(position).getKey(); //  get the user id of any user  clicked
+                            Intent intent = new Intent(AllUsersActivity.this,ProfileActivity.class);
+                            intent.putExtra("visit_user_data",visit_user_id);
+                            startActivity(intent);
+                        }
+                    });
+                }
+
+
+            };
+
+//        firebaseRecyclerAdapter.startListening();
+            recyclerView.setAdapter(firebaseRecyclerAdapter);
+
+
+        }
+    }
 
     //retrieve the user's data in real time
     @Override
